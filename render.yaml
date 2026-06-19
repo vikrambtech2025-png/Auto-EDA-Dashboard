@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: auto-eda-dashboard
+    env: docker
+    plan: starter
+    autoDeploy: true
+    disk:
+      name: auto-eda-data
+      mountPath: /app/data
+      sizeGB: 1
+    healthCheckPath: /api/health

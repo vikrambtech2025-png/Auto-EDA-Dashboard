@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Auto EDA Dashboard</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">A</div>
+          <div>
+            <p>Auto EDA</p>
+            <span>Dataset intelligence</span>
+          </div>
+        </div>
+
+        <form id="uploadForm" class="upload-card">
+          <input id="fileInput" name="file" type="file" accept=".csv,.xls,.xlsx" />
+          <label for="fileInput" id="dropZone" class="drop-zone">
+            <span class="drop-icon">+</span>
+            <strong>Upload dataset</strong>
+            <small>CSV, XLS, XLSX up to 50 MB</small>
+          </label>
+          <button class="primary-button" type="submit">Run EDA</button>
+          <button class="ghost-button" id="demoButton" type="button">Load demo data</button>
+        </form>
+
+        <section class="history-panel">
+          <div class="panel-title">
+            <h2>Recent Runs</h2>
+            <button id="refreshButton" class="icon-button" type="button" title="Refresh history">↻</button>
+          </div>
+          <div id="historyList" class="history-list"></div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Automated exploratory data analysis</p>
+            <h1 id="datasetTitle">Upload a dataset to generate a profile</h1>
+          </div>
+          <div class="topbar-actions">
+            <a id="downloadLink" class="secondary-button disabled" href="#" aria-disabled="true">Export JSON</a>
+          </div>
+        </header>
+
+        <section id="emptyState" class="empty-state">
+          <div class="empty-visual">
+            <div></div><div></div><div></div><div></div>
+          </div>
+          <h2>Data profiling, quality checks, and visual summaries in one workflow.</h2>
+          <p>Start with your own CSV or load the demo dataset. Reports are stored in the local database and can be reopened from history.</p>
+        </section>
+
+        <section id="dashboard" class="dashboard hidden">
+          <div class="stats-grid">
+            <article class="metric-card">
+              <span>Rows</span>
+              <strong id="rowsMetric">0</strong>
+              <small id="sampleNote">Full dataset used</small>
+            </article>
+            <article class="metric-card">
+              <span>Columns</span>
+              <strong id="columnsMetric">0</strong>
+              <small id="typeMetric">0 numeric</small>
+            </article>
+            <article class="metric-card">
+              <span>Missing Cells</span>
+              <strong id="missingMetric">0%</strong>
+              <small id="missingDetail">0 cells</small>
+            </article>
+            <article class="metric-card quality">
+              <span>Quality Score</span>
+              <strong id="qualityMetric">0</strong>
+              <small>Completeness and duplication weighted</small>
+            </article>
+          </div>
+
+          <div class="content-grid">
+            <section class="panel wide">
+              <div class="panel-title">
+                <h2>Missingness by Column</h2>
+                <span>Top affected fields</span>
+              </div>
+              <canvas id="missingChart" height="240"></canvas>
+            </section>
+
+            <section class="panel">
+              <div class="panel-title">
+                <h2>Data Quality Alerts</h2>
+                <span id="alertCount">0 alerts</span>
+              </div>
+              <div id="alertsList" class="alerts-list"></div>
+            </section>
+
+            <section class="panel wide">
+              <div class="panel-title">
+                <h2>Numeric Distributions</h2>
+                <select id="distributionSelect"></select>
+              </div>
+              <canvas id="distributionChart" height="260"></canvas>
+            </section>
+
+            <section class="panel">
+              <div class="panel-title">
+                <h2>Strongest Correlations</h2>
+                <span>Pearson</span>
+              </div>
+              <div id="correlationList" class="correlation-list"></div>
+            </section>
+
+            <section class="panel wide">
+              <div class="panel-title">
+                <h2>Column Profile</h2>
+                <span id="schemaSummary">Schema overview</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Column</th>
+                      <th>Type</th>
+                      <th>Missing</th>
+                      <th>Unique</th>
+                      <th>Mean</th>
+                      <th>Outliers</th>
+                    </tr>
+                  </thead>
+                  <tbody id="schemaTable"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-title">
+                <h2>Category Snapshot</h2>
+                <select id="categorySelect"></select>
+              </div>
+              <canvas id="categoryChart" height="260"></canvas>
+            </section>
+
+            <section class="panel full">
+              <div class="panel-title">
+                <h2>Preview</h2>
+                <span>First 10 rows</span>
+              </div>
+              <div id="previewTable" class="table-wrap"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
