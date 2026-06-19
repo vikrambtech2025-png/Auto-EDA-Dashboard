@@ -2,7 +2,7 @@ services:
   - type: web
     name: auto-eda-dashboard
     env: docker
-    plan: starter
+    plan: free
     autoDeploy: true
     disk:
       name: auto-eda-data
