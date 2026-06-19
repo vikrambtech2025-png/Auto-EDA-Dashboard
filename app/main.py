@@ -41,11 +41,13 @@ def health() -> dict[str, str]:
 
 @app.get("/api/datasets")
 def datasets() -> dict[str, object]:
+    init_db()
     return {"datasets": list_datasets()}
 
 
 @app.get("/api/datasets/{dataset_id}")
 def dataset_report(dataset_id: int) -> dict[str, object]:
+    init_db()
     report = get_report(dataset_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Dataset not found")
@@ -54,6 +56,7 @@ def dataset_report(dataset_id: int) -> dict[str, object]:
 
 @app.get("/api/datasets/{dataset_id}/download")
 def download_report(dataset_id: int) -> JSONResponse:
+    init_db()
     report = get_report(dataset_id)
     if report is None:
         raise HTTPException(status_code=404, detail="Dataset not found")
@@ -73,6 +76,7 @@ async def upload_dataset(file: UploadFile = File(...)) -> dict[str, object]:
         raise HTTPException(status_code=400, detail="Only CSV, XLS, and XLSX files are supported.")
 
     ensure_dirs()
+    init_db()
     stored_path = UPLOAD_DIR / f"{uuid.uuid4().hex}{suffix}"
     bytes_written = 0
     with stored_path.open("wb") as output:
@@ -113,6 +117,7 @@ def create_demo_dataset() -> dict[str, object]:
     import pandas as pd
 
     ensure_dirs()
+    init_db()
     rng = np.random.default_rng(24)
     rows = 900
     df = pd.DataFrame(
