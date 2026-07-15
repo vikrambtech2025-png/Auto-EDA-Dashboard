@@ -62,7 +62,9 @@ def download_report(dataset_id: int) -> JSONResponse:
         raise HTTPException(status_code=404, detail="Dataset not found")
     return JSONResponse(
         report,
-        headers={"Content-Disposition": f'attachment; filename="auto-eda-report-{dataset_id}.json"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="auto-eda-report-{dataset_id}.json"'
+        },
     )
 
 
@@ -73,7 +75,9 @@ async def upload_dataset(file: UploadFile = File(...)) -> dict[str, object]:
 
     suffix = Path(file.filename).suffix.lower()
     if suffix not in {".csv", ".xls", ".xlsx"}:
-        raise HTTPException(status_code=400, detail="Only CSV, XLS, and XLSX files are supported.")
+        raise HTTPException(
+            status_code=400, detail="Only CSV, XLS, and XLSX files are supported."
+        )
 
     ensure_dirs()
     init_db()
@@ -85,7 +89,9 @@ async def upload_dataset(file: UploadFile = File(...)) -> dict[str, object]:
             if bytes_written > MAX_UPLOAD_MB * 1024 * 1024:
                 output.close()
                 stored_path.unlink(missing_ok=True)
-                raise HTTPException(status_code=413, detail=f"Upload limit is {MAX_UPLOAD_MB} MB.")
+                raise HTTPException(
+                    status_code=413, detail=f"Upload limit is {MAX_UPLOAD_MB} MB."
+                )
             output.write(chunk)
 
     try:
@@ -123,8 +129,12 @@ def create_demo_dataset() -> dict[str, object]:
     df = pd.DataFrame(
         {
             "customer_id": [f"CUST-{10000 + index}" for index in range(rows)],
-            "region": rng.choice(["North", "South", "East", "West"], rows, p=[0.28, 0.21, 0.26, 0.25]),
-            "segment": rng.choice(["Consumer", "SMB", "Enterprise"], rows, p=[0.58, 0.31, 0.11]),
+            "region": rng.choice(
+                ["North", "South", "East", "West"], rows, p=[0.28, 0.21, 0.26, 0.25]
+            ),
+            "segment": rng.choice(
+                ["Consumer", "SMB", "Enterprise"], rows, p=[0.58, 0.31, 0.11]
+            ),
             "monthly_spend": rng.normal(520, 140, rows).clip(40),
             "support_tickets": rng.poisson(2.2, rows),
             "tenure_months": rng.integers(1, 72, rows),

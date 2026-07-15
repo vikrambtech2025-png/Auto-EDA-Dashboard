@@ -29,8 +29,7 @@ def connect() -> Iterator[sqlite3.Connection]:
 
 def init_db() -> None:
     with connect() as conn:
-        conn.execute(
-            """
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS datasets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -42,18 +41,15 @@ def init_db() -> None:
                 quality_score REAL NOT NULL,
                 created_at TEXT NOT NULL
             )
-            """
-        )
-        conn.execute(
-            """
+            """)
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS reports (
                 dataset_id INTEGER PRIMARY KEY,
                 report_json TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE
             )
-            """
-        )
+            """)
         conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_datasets_created_at ON datasets(created_at DESC)"
         )

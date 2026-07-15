@@ -118,7 +118,9 @@ def profile_dataframe(df: pd.DataFrame, filename: str) -> dict[str, Any]:
             iqr = None if pd.isna(q1) or pd.isna(q3) else q3 - q1
             outliers = 0
             if iqr and iqr > 0:
-                outliers = int(((series < q1 - 1.5 * iqr) | (series > q3 + 1.5 * iqr)).sum())
+                outliers = int(
+                    ((series < q1 - 1.5 * iqr) | (series > q3 + 1.5 * iqr)).sum()
+                )
             record.update(
                 {
                     "mean": _safe_float(series.mean()),
@@ -137,7 +139,8 @@ def profile_dataframe(df: pd.DataFrame, filename: str) -> dict[str, Any]:
             category_columns.append(column)
             top_values = series.astype("string").value_counts(dropna=True).head(8)
             record["top_values"] = [
-                {"label": str(index), "count": int(value)} for index, value in top_values.items()
+                {"label": str(index), "count": int(value)}
+                for index, value in top_values.items()
             ]
             if pd.api.types.is_datetime64_any_dtype(series):
                 record["min"] = None if non_null.empty else str(non_null.min())
@@ -170,7 +173,11 @@ def profile_dataframe(df: pd.DataFrame, filename: str) -> dict[str, Any]:
             }
         )
 
-    numeric_df = profiled[numeric_columns].select_dtypes(include=[np.number]) if numeric_columns else pd.DataFrame()
+    numeric_df = (
+        profiled[numeric_columns].select_dtypes(include=[np.number])
+        if numeric_columns
+        else pd.DataFrame()
+    )
     correlations: list[dict[str, Any]] = []
     correlation_matrix: dict[str, dict[str, float | None]] = {}
     if len(numeric_df.columns) >= 2:
@@ -184,14 +191,23 @@ def profile_dataframe(df: pd.DataFrame, filename: str) -> dict[str, Any]:
                 value = _safe_float(corr.loc[left, right])
                 if value is not None:
                     correlations.append(
-                        {"left": str(left), "right": str(right), "value": value, "abs": abs(value)}
+                        {
+                            "left": str(left),
+                            "right": str(right),
+                            "value": value,
+                            "abs": abs(value),
+                        }
                     )
-        correlations = sorted(correlations, key=lambda item: item["abs"], reverse=True)[:10]
+        correlations = sorted(correlations, key=lambda item: item["abs"], reverse=True)[
+            :10
+        ]
 
     charts = {
         "missing": [
             {"label": item["name"], "value": item["missing_pct"]}
-            for item in sorted(columns, key=lambda col: col["missing_pct"], reverse=True)[:12]
+            for item in sorted(
+                columns, key=lambda col: col["missing_pct"], reverse=True
+            )[:12]
         ],
         "distributions": [],
         "categories": [],
@@ -201,7 +217,9 @@ def profile_dataframe(df: pd.DataFrame, filename: str) -> dict[str, Any]:
         values = numeric_df[column].dropna()
         if values.empty:
             continue
-        counts, edges = np.histogram(values, bins=min(14, max(5, int(math.sqrt(len(values))))))
+        counts, edges = np.histogram(
+            values, bins=min(14, max(5, int(math.sqrt(len(values)))))
+        )
         charts["distributions"].append(
             {
                 "column": str(column),
@@ -222,12 +240,15 @@ def profile_dataframe(df: pd.DataFrame, filename: str) -> dict[str, Any]:
                 {
                     "column": str(column),
                     "values": [
-                        {"label": str(index), "count": int(count)} for index, count in values.items()
+                        {"label": str(index), "count": int(count)}
+                        for index, count in values.items()
                     ],
                 }
             )
 
-    quality_score = max(0, 100 - (missing_pct * 45) - (duplicate_pct * 25) - min(len(alerts) * 3, 20))
+    quality_score = max(
+        0, 100 - (missing_pct * 45) - (duplicate_pct * 25) - min(len(alerts) * 3, 20)
+    )
     quality_score = round(float(quality_score), 1)
 
     return {
